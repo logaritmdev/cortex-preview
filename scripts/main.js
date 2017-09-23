@@ -82,6 +82,8 @@
 				}
 
 				image.addEventListener('load', onImageLoad)
+
+				images.push(image)
 			}
 		}
 	}
