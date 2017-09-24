@@ -99,7 +99,7 @@
 		})
 	}
 
-	var socket = new WebSocket('ws://' + url);
+	var socket = new WebSocket(url);
 
 	socket.addEventListener('message', function(e) {
 
@@ -109,8 +109,13 @@
 		}
 
 		switch (message.type) {
+
 			case 'RENDER_COMPLETE':
 				finish(message.data)
+				break;
+
+			case 'ERROR':
+				console.error(message.data.message)
 				break
 		}
 

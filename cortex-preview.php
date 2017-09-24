@@ -18,6 +18,8 @@ define('CORTEX_PREVIEW_SM_SIZE', 375);
 define('CORTEX_PREVIEW_MD_SIZE', 1024);
 define('CORTEX_PREVIEW_LG_SIZE', 1280);
 
+load_plugin_textdomain('cortex-preview', false, dirname(dirname(plugin_basename(__FILE__))) . '/languages/');
+
 /**
  * Invalidates the preview upon saving.
  * @action cortex/save_block
@@ -229,13 +231,13 @@ add_filter('get_twig', function($twig) {
 
 					if ($url == '' ||
 						$url == null) {
-						echo 'Cortex preview server url missing.';
+						echo __('Cortex preview server url missing.', 'cortex-preview');
 						return;
 					}
 
 					if ($key == '' ||
 						$url == null) {
-						echo 'Cortex preview server key missing.';
+						echo __('Cortex preview server key missing.', 'cortex-preview');
 						return;
 					}
 
@@ -275,8 +277,8 @@ add_action('admin_menu', function() {
 		'manage_options',
 		'cortex-preview-options',
 		'cortex_preview_options_page',
-		'',
-		100
+		'dashicons-welcome-view-site',
+		'80.025'
 	);
 
 });
@@ -332,7 +334,7 @@ function cortex_preview_options_page() {
  * @since 0.1.0
  */
 function cortex_preview_render_server_section() {
-	echo 'Rendering server information.';
+	echo __('Cortex Previews uses an external server to create block rendering. You need to provide a server URL and a key.', 'cortex-preview');
 }
 
 /**
