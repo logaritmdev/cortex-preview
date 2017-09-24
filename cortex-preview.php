@@ -46,11 +46,12 @@ add_action('cortex/save_block', function($document, $id) {
 
 add_action('admin_enqueue_scripts', function() {
 
-	wp_enqueue_script('cortex-preview-main', plugins_url('scripts/main.js', __FILE__ ));
+	wp_enqueue_script('cortex-preview-main', plugins_url('scripts/main.js', __FILE__));
 
 	wp_localize_script('cortex-preview-main', 'CortexPreviewSettings', array(
 		'serverUrl' => get_option('cortex_preview_server_url'),
 		'serverKey' => get_option('cortex_preview_server_key'),
+		'url' => plugins_url('', __FILE__)
 	));
 });
 
@@ -72,6 +73,11 @@ add_action('wp_ajax_cortex_preview_update', function() {
 		$format = $formats[$i];
 		$result = $results[$i];
 
+		if ($result == '' ||
+			$result == null) {
+			continue;
+		}
+
 		$size = '';
 
 		switch ($format) {
@@ -87,6 +93,9 @@ add_action('wp_ajax_cortex_preview_update', function() {
 			case CORTEX_PREVIEW_LG_SIZE:
 				$size = 'lg';
 				break;
+
+			default:
+				continue;
 		}
 
 	 	$preview_src = WP_CONTENT_DIR . '/cache/cortex-previews/' . basename($result);
@@ -186,8 +195,16 @@ add_filter('get_twig', function($twig) {
 			<style type="text/css">
 
 				#cortex-preview-set-<?php echo $id ?> img {
+					display: block;
 					height: auto;
 					width: 100%;
+				}
+
+				#cortex-preview-set-<?php echo $id ?> img.error {
+					display: block;
+					margin-left: auto;
+					margin-right: auto;
+					width: 56px;
 				}
 
 				#cortex-preview-set-<?php echo $id ?> img.sm,

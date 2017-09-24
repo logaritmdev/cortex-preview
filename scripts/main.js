@@ -2,6 +2,7 @@
 
 	var url = CortexPreviewSettings.serverUrl || ''
 	var key = CortexPreviewSettings.serverKey || ''
+	var socket = null
 
 	if (url === '') {
 		console.error('CortexPreview: Missing server url parameter.')
@@ -21,7 +22,17 @@
 		return JSON.parse(string)
 	}
 
+	var showLoading = function(id) {
+		$('.cortex-block-list-item[data-id=' + id + ']').addClass('cortex-block-list-item-loading')
+	}
+
+	var hideLoading = function(id) {
+		$('.cortex-block-list-item[data-id=' + id + ']').removeClass('cortex-block-list-item-loading')
+	}
+
 	var finish = function(data) {
+
+		console.log('Rendering completed')
 
 		update(data)
 
@@ -42,14 +53,20 @@
 			loaded++
 
 			if (images.length === loaded) {
-				$('.cortex-block-list-item[data-id=' + data.options.block + ']').removeClass('cortex-block-list-item-loading')
+				hideLoading(data.options.block)
 			}
 		}
 
 		for (var i = 0; i < results.length; i++) {
 
-			var result = results[i]
-			var format = formats[i]
+			var result = results[i] || null
+			var format = formats[i] || null
+
+			if (result == null) {
+				element.append('<img class="error" src="' + CortexPreviewSettings.url + '/images/error.png">')
+				hideLoading(data.options.block)
+				return
+			}
 
 			var image = null
 
@@ -99,25 +116,45 @@
 		})
 	}
 
-	var socket = new WebSocket(url);
+	$(function() {
 
-	socket.addEventListener('message', function(e) {
+		$('#cortex_meta_box_document').each(function(i, element) {
 
-		var message = decode(e.data)
-		if (message == null) {
-			return
-		}
+			socket = new WebSocket(url);
 
-		switch (message.type) {
+			socket.addEventListener('open', function(e) {
+				console.log('Connected to cortex preview server')
+			})
 
-			case 'RENDER_COMPLETE':
-				finish(message.data)
-				break;
+			socket.addEventListener('close', function(e) {
+				console.log('Connection to cortex preview server has been closed', e.code)
+			})
 
-			case 'ERROR':
-				console.error(message.data.message)
-				break
-		}
+			socket.addEventListener('error', function(e) {
+				console.log('Connection error', e)
+			})
+
+			socket.addEventListener('message', function(e) {
+
+				var message = decode(e.data)
+				if (message == null) {
+					return
+				}
+
+				switch (message.type) {
+
+					case 'RENDER_COMPLETE':
+						finish(message.data)
+						break;
+
+					case 'ERROR':
+						console.error(message.data.message)
+						break
+				}
+
+			})
+
+		})
 
 	})
 
@@ -128,6 +165,8 @@
 		 * @since 0.1.0
 		 */
 		generate: function(id, url, ver, formats) {
+
+			console.log('Sending generation request to cortex server')
 
 			var options = {
 				block: id
@@ -144,9 +183,16 @@
 				}
 			})
 
-			socket.send(data)
+			showLoading(id)
 
-			$('.cortex-block-list-item[data-id=' + id + ']').addClass('cortex-block-list-item-loading')
+			if (socket.readyState === 1) {
+				socket.send(data)
+				return
+			}
+
+			socket.addEventListener('open', function() {
+				socket.send(data)
+			})
 		}
 	}
 
