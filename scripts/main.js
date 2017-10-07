@@ -57,6 +57,19 @@
 			}
 		}
 
+		var onImageError = function() {
+
+			loaded++
+
+			if (images.length === loaded) {
+
+				hideLoading(data.options.block)
+
+				element.empty()
+				element.append('<img class="error" src="' + CortexPreviewSettings.url + '/images/error.png">')
+			}
+		}
+
 		for (var i = 0; i < results.length; i++) {
 
 			var result = results[i] || null
@@ -99,6 +112,7 @@
 				}
 
 				image.addEventListener('load', onImageLoad)
+				image.addEventListener('error', onImageError)
 
 				images.push(image)
 			}

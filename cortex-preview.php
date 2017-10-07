@@ -142,7 +142,7 @@ add_filter('get_twig', function($twig) {
 		$sizes = [];
 
 		if (CORTEX_PREVIEW_SM_ENABLED) {
-			if ($preview_src_sm == '' || file_exists($preview_src_sm) === false || is_readable($preview_src_sm) == false || _cortex_file_empty($preview_src_sm)) {
+			if (empty($preview_src_sm) || @file_exists($preview_src_sm) === false || @is_readable($preview_src_sm) == false || _cortex_file_empty($preview_src_sm)) {
 				$preview_src_sm = null;
 				$preview_url_sm = null;
 				array_push($sizes, 'sm');
@@ -150,7 +150,7 @@ add_filter('get_twig', function($twig) {
 		}
 
 		if (CORTEX_PREVIEW_MD_ENABLED) {
-			if ($preview_src_md == '' || file_exists($preview_src_md) === false || is_readable($preview_src_md) == false || _cortex_file_empty($preview_src_md)) {
+			if (empty($preview_src_md) || @file_exists($preview_src_md) === false || @is_readable($preview_src_md) == false || _cortex_file_empty($preview_src_md)) {
 				$preview_src_md = null;
 				$preview_url_md = null;
 				array_push($sizes, 'md');
@@ -158,7 +158,7 @@ add_filter('get_twig', function($twig) {
 		}
 
 		if (CORTEX_PREVIEW_LG_ENABLED) {
-			if ($preview_src_lg == '' || file_exists($preview_src_lg) === false || is_readable($preview_src_lg) == false || _cortex_file_empty($preview_src_lg)) {
+			if (empty($preview_src_lg) || @file_exists($preview_src_lg) === false || @is_readable($preview_src_lg) == false || _cortex_file_empty($preview_src_lg)) {
 				$preview_src_lg = null;
 				$preview_url_lg = null;
 				array_push($sizes, 'lg');
@@ -337,6 +337,46 @@ function cortex_preview_options_page() {
 				submit_button();
 
 			?>
+
+		</form>
+
+		<h2>Reset previews</h2>
+
+		<?php
+
+			if (isset($_POST['cortex_preview_reset'])) {
+
+				global $wpdb;
+
+				$wpdb->query("
+					DELETE FROM $wpdb->postmeta
+					WHERE
+						meta_key = '_cortex_preview_url_sm' OR
+						meta_key = '_cortex_preview_url_md' OR
+						meta_key = '_cortex_preview_url_lg' OR
+						meta_key = '_cortex_preview_src_sm' OR
+						meta_key = '_cortex_preview_src_md' OR
+						meta_key = '_cortex_preview_src_lg'
+				");
+
+				?>
+
+					<div id="setting-error-settings_updated" class="updated settings-error notice is-dismissible">
+						<p><strong>Previews have been reset.</strong></p>
+						<button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
+					</div>
+
+				<?php
+			}
+
+		?>
+
+		<p>Clicking reset will erase all previews and force a regeneration.</p>
+
+		<form method="post" action="<?php echo $_SERVER['REQUEST_URI'] ?>">
+
+			<input id="cortex-reset" type="submit" value="Reset" class="button button-primary" onClick="return confirm('This will erase all previews. Do you want to continue ?')">
+			<input type="hidden" name="cortex_preview_reset">
 
 		</form>
 
