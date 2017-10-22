@@ -16,7 +16,7 @@ define('CORTEX_PREVIEW_LG_ENABLED', true);
 
 define('CORTEX_PREVIEW_SM_SIZE', 375);
 define('CORTEX_PREVIEW_MD_SIZE', 1024);
-define('CORTEX_PREVIEW_LG_SIZE', 1280);
+define('CORTEX_PREVIEW_LG_SIZE', 1600);
 
 load_plugin_textdomain('cortex-preview', false, dirname(dirname(plugin_basename(__FILE__))) . '/languages/');
 
