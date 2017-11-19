@@ -36,7 +36,7 @@
 
 		update(data)
 
-		var element = $('.cortex-preview-generator[data-id=' + data.options.block + ']')
+		var element = $('.cortex-preview-set[data-id=' + data.options.block + ']')
 
 		var sm = parseInt(element.attr('data-size-sm'))
 		var md = parseInt(element.attr('data-size-md'))
@@ -53,6 +53,13 @@
 			loaded++
 
 			if (images.length === loaded) {
+
+				element.find('img').remove()
+
+				for (var i = 0; i < images.length; i++) {
+					element.append('<img class="' + images[i].breakpoint + '" src="' + images[i].src + '">')
+				}
+
 				hideLoading(data.options.block)
 			}
 		}
@@ -88,19 +95,19 @@
 				case sm:
 					image = new Image()
 					image.src = result
-					element.append('<img class="sm" src="' + result + '">')
+					image.breakpoint = 'sm'
 					break
 
 				case md:
 					image = new Image()
 					image.src = result
-					element.append('<img class="md" src="' + result + '">')
+					image.breakpoint = 'md'
 					break
 
 				case lg:
 					image = new Image()
 					image.src = result
-					element.append('<img class="lg" src="' + result + '">')
+					image.breakpoint = 'lg'
 					break
 			}
 
@@ -206,6 +213,48 @@
 
 			socket.addEventListener('open', function() {
 				socket.send(data)
+			})
+		},
+
+		/**
+		 * Watches for screenshot reloading.
+		 * @since 0.1.0
+		 */
+		manage: function(id, url, ver, formats, element) {
+
+			element.closest('.cortex-block-list-item').on('reloadblock', function(e) {
+
+				e.preventDefault()
+
+				console.log('Sending update request to cortex server')
+
+				ver = Date.now()
+
+				var options = {
+					block: id
+				}
+
+				var data = encode({
+					type: 'CREATE_RENDER',
+					data: {
+						key: key,
+						url: url,
+						ver: ver,
+						options: options,
+						formats: formats
+					}
+				})
+
+				showLoading(id)
+
+				if (socket.readyState === 1) {
+					socket.send(data)
+					return
+				}
+
+				socket.addEventListener('open', function() {
+					socket.send(data)
+				})
 			})
 		}
 	}

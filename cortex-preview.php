@@ -3,7 +3,7 @@
  * Plugin Name:       Cortex Preview
  * Plugin URI:        http://logaritm.ca/cortex
  * Description:       Generates image preview for blocks.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Jean-Philippe Dery
  * Author URI:        http://logaritm.ca
  * Text Domain:       cortex
@@ -165,115 +165,104 @@ add_filter('get_twig', function($twig) {
 			}
 		}
 
-		?>
+		$start = 0;
 
-		<div id="cortex-preview-set-<?php echo $id ?>" class="cortex-preview-set">
+		if (CORTEX_PREVIEW_SM_ENABLED) {
+			$minSM = $start;
+			$maxSM = CORTEX_PREVIEW_MD_SIZE - 1;
+			$start = $maxSM + 1;
+		}
 
-			<?php
+		if (CORTEX_PREVIEW_MD_ENABLED) {
+			$minMD = $start;
+			$maxMD = CORTEX_PREVIEW_LG_SIZE - 1;
+			$start = $maxMD + 1;
+		}
 
-				$start = 0;
+		if (CORTEX_PREVIEW_LG_ENABLED) {
+			$minLG = $start;
+			$maxLG = 10000;
+		}
 
-				if (CORTEX_PREVIEW_SM_ENABLED) {
-					$minSM = $start;
-					$maxSM = CORTEX_PREVIEW_MD_SIZE - 1;
-					$start = $maxSM + 1;
-				}
+	?>
 
-				if (CORTEX_PREVIEW_MD_ENABLED) {
-					$minMD = $start;
-					$maxMD = CORTEX_PREVIEW_LG_SIZE - 1;
-					$start = $maxMD + 1;
-				}
+		<style type="text/css">
 
-				if (CORTEX_PREVIEW_LG_ENABLED) {
-					$minLG = $start;
-					$maxLG = 10000;
-				}
+			.cortex-preview-set[data-id="<?php echo $id ?>"] img {
+				display: block;
+				height: auto;
+				width: 100%;
+			}
 
-			?>
+			.cortex-preview-set[data-id="<?php echo $id ?>"] img.error {
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+				width: 56px;
+			}
 
-			<style type="text/css">
+			.cortex-preview-set[data-id="<?php echo $id ?>"] img.sm,
+			.cortex-preview-set[data-id="<?php echo $id ?>"] img.md,
+			.cortex-preview-set[data-id="<?php echo $id ?>"] img.lg {
+				display: none;
+			}
 
-				#cortex-preview-set-<?php echo $id ?> img {
-					display: block;
-					height: auto;
-					width: 100%;
-				}
-
-				#cortex-preview-set-<?php echo $id ?> img.error {
-					display: block;
-					margin-left: auto;
-					margin-right: auto;
-					width: 56px;
-				}
-
-				#cortex-preview-set-<?php echo $id ?> img.sm,
-				#cortex-preview-set-<?php echo $id ?> img.md,
-				#cortex-preview-set-<?php echo $id ?> img.lg {
-					display: none;
-				}
-
-				<?php if (CORTEX_PREVIEW_SM_ENABLED): ?>
-					@media (min-width: <?php echo $minSM ?>px) and (max-width:<?php echo $maxSM ?>px) {
-						#cortex-preview-set-<?php echo $id ?> img.sm {
-							display: block;
-						}
+			<?php if (CORTEX_PREVIEW_SM_ENABLED): ?>
+				@media (min-width: <?php echo $minSM ?>px) and (max-width:<?php echo $maxSM ?>px) {
+					.cortex-preview-set[data-id="<?php echo $id ?>"] img.sm {
+						display: block;
 					}
-				<?php endif ?>
-
-				<?php if (CORTEX_PREVIEW_MD_ENABLED): ?>
-					@media (min-width: <?php echo $minMD ?>px) and (max-width:<?php echo $maxMD ?>px) {
-						#cortex-preview-set-<?php echo $id ?> img.md {
-							display: block;
-						}
-					}
-				<?php endif ?>
-
-				<?php if (CORTEX_PREVIEW_LG_ENABLED): ?>
-					@media (min-width: <?php echo $minLG ?>px) and (max-width:<?php echo $maxLG ?>px) {
-						#cortex-preview-set-<?php echo $id ?> img.lg {
-							display: block;
-						}
-					}
-				<?php endif ?>
-
-			</style>
-
-			<?php
-
-				if (count($sizes) > 0) {
-
-					$url = get_option('cortex_preview_server_url');
-					$key = get_option('cortex_preview_server_key');
-
-					if ($url == '' ||
-						$url == null) {
-						echo __('Cortex preview server url missing.', 'cortex-preview');
-						return;
-					}
-
-					if ($key == '' ||
-						$url == null) {
-						echo __('Cortex preview server key missing.', 'cortex-preview');
-						return;
-					}
-
-					$ver = cortex_get_block_ver($post);
-					$url = cortex_get_block_url($post);
-
-					_cortex_render_script($id, $url, $ver, $sizes);
-
-				} else {
-
-					_cortex_render_images($id);
-
 				}
+			<?php endif ?>
 
-			?>
+			<?php if (CORTEX_PREVIEW_MD_ENABLED): ?>
+				@media (min-width: <?php echo $minMD ?>px) and (max-width:<?php echo $maxMD ?>px) {
+					.cortex-preview-set[data-id="<?php echo $id ?>"] img.md {
+						display: block;
+					}
+				}
+			<?php endif ?>
 
-		</div>
+			<?php if (CORTEX_PREVIEW_LG_ENABLED): ?>
+				@media (min-width: <?php echo $minLG ?>px) and (max-width:<?php echo $maxLG ?>px) {
+					.cortex-preview-set[data-id="<?php echo $id ?>"] img.lg {
+						display: block;
+					}
+				}
+			<?php endif ?>
 
-		<?php
+		</style>
+
+	<?php
+
+		$url = get_option('cortex_preview_server_url');
+		$key = get_option('cortex_preview_server_key');
+
+		if ($url == '' ||
+			$url == null) {
+			echo __('Cortex preview server url missing.', 'cortex-preview');
+			return;
+		}
+
+		if ($key == '' ||
+			$url == null) {
+			echo __('Cortex preview server key missing.', 'cortex-preview');
+			return;
+		}
+
+		$ver = cortex_get_block_ver($post);
+		$url = cortex_get_block_url($post);
+
+		if (count($sizes) > 0) {
+
+			_cortex_render_script($id, $url, $ver, $sizes);
+
+		} else {
+
+			_cortex_render_images($id, $url, $ver);
+
+		}
+
 	};
 
 	$twig->addFunction(new \Twig_SimpleFunction('generate_preview', $generate_preview));
@@ -447,16 +436,13 @@ function _cortex_render_script($id, $url, $ver, $sizes) {
 	?>
 
 	<div
-		class="cortex-preview-generator"
+		class="cortex-preview-set"
 		data-id="<?php echo $id ?>"
 		data-url="<?php echo $url ?>"
 		data-ver="<?php echo $ver ?>"
 		<?php if (CORTEX_PREVIEW_SM_ENABLED): ?>data-size-sm="<?php echo CORTEX_PREVIEW_SM_SIZE ?>"<?php endif ?>
 		<?php if (CORTEX_PREVIEW_MD_ENABLED): ?>data-size-md="<?php echo CORTEX_PREVIEW_MD_SIZE ?>"<?php endif ?>
-		<?php if (CORTEX_PREVIEW_LG_ENABLED): ?>data-size-lg="<?php echo CORTEX_PREVIEW_LG_SIZE ?>"<?php endif ?>
-		<?php if (CORTEX_PREVIEW_SM_ENABLED): ?>data-size-sm-invalid="<?php echo in_array('sm', $sizes) ? 'true' : 'false' ?>"<?php endif ?>
-		<?php if (CORTEX_PREVIEW_MD_ENABLED): ?>data-size-md-invalid="<?php echo in_array('md', $sizes) ? 'true' : 'false' ?>"<?php endif ?>
-		<?php if (CORTEX_PREVIEW_LG_ENABLED): ?>data-size-lg-invalid="<?php echo in_array('lg', $sizes) ? 'true' : 'false' ?>"<?php endif ?>>
+		<?php if (CORTEX_PREVIEW_LG_ENABLED): ?>data-size-lg="<?php echo CORTEX_PREVIEW_LG_SIZE ?>"<?php endif ?>>
 
 		<script type="text/javascript">
 
@@ -464,7 +450,7 @@ function _cortex_render_script($id, $url, $ver, $sizes) {
 
 				var generate = function() {
 
-					var element = $('.cortex-preview-generator[data-id=<?php echo $id ?>]')
+					var element = $('.cortex-preview-set[data-id="<?php echo $id ?>"]')
 
 					var id = element.attr('data-id')
 					var url = element.attr('data-url')
@@ -478,19 +464,44 @@ function _cortex_render_script($id, $url, $ver, $sizes) {
 
 					var formats = []
 
-					if (element.attr('data-size-sm-invalid') === 'true') formats.push(sm)
-					if (element.attr('data-size-md-invalid') === 'true') formats.push(md)
-					if (element.attr('data-size-lg-invalid') === 'true') formats.push(lg)
+					if (element.attr('data-size-sm') != null) formats.push(sm)
+					if (element.attr('data-size-md') != null) formats.push(md)
+					if (element.attr('data-size-lg') != null) formats.push(lg)
 
 					CortexPreview.generate(id, url, ver, formats)
 				}
 
+				var manage = function() {
+
+					var element = $('.cortex-preview-set[data-id="<?php echo $id ?>"]')
+
+					var id = element.attr('data-id')
+					var url = element.attr('data-url')
+					var ver = element.attr('data-ver')
+
+					id = parseInt(id)
+
+					var sm = parseInt(element.attr('data-size-sm'))
+					var md = parseInt(element.attr('data-size-md'))
+					var lg = parseInt(element.attr('data-size-lg'))
+
+					var formats = []
+
+					if (element.attr('data-size-sm') != null) formats.push(sm)
+					if (element.attr('data-size-md') != null) formats.push(md)
+					if (element.attr('data-size-lg') != null) formats.push(lg)
+
+					CortexPreview.manage(id, url, ver, formats, element)
+				}
+
 				if (document.readyState === 'complete') {
 					generate()
+					manage()
 					return
 				}
 
 				$(generate)
+				$(manage)
 
 			})(jQuery)
 
@@ -506,7 +517,7 @@ function _cortex_render_script($id, $url, $ver, $sizes) {
  * @function _cortex_render_script
  * @since 0.1.0
  */
-function _cortex_render_images($id) {
+function _cortex_render_images($id, $url, $ver) {
 
 	$preview_url_sm = get_post_meta($id, '_cortex_preview_url_sm', true);
 	$preview_url_md = get_post_meta($id, '_cortex_preview_url_md', true);
@@ -514,9 +525,58 @@ function _cortex_render_images($id) {
 
 	?>
 
-	<?php if (CORTEX_PREVIEW_SM_ENABLED): ?><img class="sm" src="<?php echo $preview_url_sm ?>"><?php endif ?>
-	<?php if (CORTEX_PREVIEW_MD_ENABLED): ?><img class="md" src="<?php echo $preview_url_md ?>"><?php endif ?>
-	<?php if (CORTEX_PREVIEW_LG_ENABLED): ?><img class="lg" src="<?php echo $preview_url_lg ?>"><?php endif ?>
+	<div
+		class="cortex-preview-set"
+		data-id="<?php echo $id ?>"
+		data-url="<?php echo $url ?>"
+		data-ver="<?php echo $ver ?>"
+		<?php if (CORTEX_PREVIEW_SM_ENABLED): ?>data-size-sm="<?php echo CORTEX_PREVIEW_SM_SIZE ?>"<?php endif ?>
+		<?php if (CORTEX_PREVIEW_MD_ENABLED): ?>data-size-md="<?php echo CORTEX_PREVIEW_MD_SIZE ?>"<?php endif ?>
+		<?php if (CORTEX_PREVIEW_LG_ENABLED): ?>data-size-lg="<?php echo CORTEX_PREVIEW_LG_SIZE ?>"<?php endif ?>>
+
+		<script type="text/javascript">
+
+			(function($) {
+
+				var manage = function() {
+
+					var element = $('.cortex-preview-set[data-id="<?php echo $id ?>"]')
+
+					var id = element.attr('data-id')
+					var url = element.attr('data-url')
+					var ver = element.attr('data-ver')
+
+					id = parseInt(id)
+
+					var sm = parseInt(element.attr('data-size-sm'))
+					var md = parseInt(element.attr('data-size-md'))
+					var lg = parseInt(element.attr('data-size-lg'))
+
+					var formats = []
+
+					if (element.attr('data-size-sm') != null) formats.push(sm)
+					if (element.attr('data-size-md') != null) formats.push(md)
+					if (element.attr('data-size-lg') != null) formats.push(lg)
+
+					CortexPreview.manage(id, url, ver, formats, element)
+				}
+
+				if (document.readyState === 'complete') {
+					manage()
+					return
+				}
+
+				$(manage)
+
+			})(jQuery)
+
+		</script>
+
+		<?php if (CORTEX_PREVIEW_SM_ENABLED): ?><img class="sm" src="<?php echo $preview_url_sm ?>"><?php endif ?>
+		<?php if (CORTEX_PREVIEW_MD_ENABLED): ?><img class="md" src="<?php echo $preview_url_md ?>"><?php endif ?>
+		<?php if (CORTEX_PREVIEW_LG_ENABLED): ?><img class="lg" src="<?php echo $preview_url_lg ?>"><?php endif ?>
+
+	</div>
 
 	<?php
 }
