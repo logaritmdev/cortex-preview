@@ -1,0 +1,43 @@
+.cortex-preview-simple-table {
+	border-collapse: collapse;
+	table-layout: fixed;
+	width: 100%;
+}
+
+.cortex-preview-simple-table img {
+	max-width: 100%;
+}
+
+.cortex-preview-simple-label {
+	border: 1px solid #ececec;
+	background: #fcfcfc;
+	padding: 12px;
+	vertical-align: top;
+	width: 15%;
+}
+
+.cortex-preview-simple-value {
+	border: 1px solid #ececec;
+	padding: 12px;
+	width: 85%;
+}
+
+.cortex-preview-row-label {
+	font-weight: bold;
+	border: 1px solid #ececec;
+	background: #fcfcfc;
+	padding: 12px;
+	padding-right: 0px;
+}
+
+.cortex-preview-row-value {
+	padding: 12px;
+	padding-right: 0px;
+}
+
+.cortex-preview-simple-value h1,
+.cortex-preview-simple-value h2,
+.cortex-preview-simple-value h3,
+.cortex-preview-simple-value h4 {
+	margin-top: 0px !important;
+}
