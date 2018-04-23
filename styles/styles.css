@@ -4,6 +4,12 @@
 	width: 100%;
 }
 
+.cortex-preview-simple-table td {
+	word-wrap: break-word;
+    word-break: break-all;
+    white-space: normal;
+}
+
 .cortex-preview-simple-table img {
 	max-width: 100%;
 }

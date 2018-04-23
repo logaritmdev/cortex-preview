@@ -128,13 +128,13 @@ add_filter('get_twig', function($twig) {
 
 	$generate_preview = function($post) {
 
+		$id = $post->ID;
+		$document = $post->post_parent;
+
 		if (cortex_preview_is_local_dev()) {
 			cortex_preview_render_simple_preview($post);
 			return;
 		}
-
-		$id = $post->ID;
-		$document = $post->post_parent;
 
 		$preview_url_sm = get_post_meta($id, '_cortex_preview_url_sm', true);
 		$preview_src_sm = get_post_meta($id, '_cortex_preview_src_sm', true);
@@ -621,6 +621,15 @@ function cortex_preview_is_local_dev() {
 	}
 
 	return false;
+}
+
+/**
+ * Renders a text prewview.
+ * @function cortex_preview_render_simple_preview
+ * @since 0.1.0
+ */
+function cortex_preview_render_html_preview($post) {
+
 }
 
 /**
