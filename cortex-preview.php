@@ -145,7 +145,7 @@ add_filter('get_twig', function($twig) {
 		$preview_url_lg = get_post_meta($id, '_cortex_preview_url_lg', true);
 		$preview_src_lg = get_post_meta($id, '_cortex_preview_src_lg', true);
 
-		$sizes = [];
+		$sizes = array();
 
 		if (CORTEX_PREVIEW_SM_ENABLED) {
 			if (empty($preview_src_sm) || @file_exists($preview_src_sm) === false || @is_readable($preview_src_sm) == false || _cortex_file_empty($preview_src_sm)) {
