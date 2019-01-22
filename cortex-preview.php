@@ -3,7 +3,7 @@
  * Plugin Name:       Cortex Preview
  * Plugin URI:        http://logaritm.ca/cortex
  * Description:       Generates image preview for blocks.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Jean-Philippe Dery
  * Author URI:        http://logaritm.ca
  * Text Domain:       cortex
@@ -283,7 +283,7 @@ add_filter('get_twig', function($twig) {
  */
 add_action('admin_menu', function() {
 
-	add_menu_page(
+	add_options_page(
 		'Cortex Preview',
 		'Cortex Preview',
 		'manage_options',
@@ -712,6 +712,20 @@ add_filter('cortex_preview_render_repeater', function($field) {
 			cortex_preview_render_simple_field_preview($sub_field);
 			echo '</div>';
 		}
+	});
+});
+
+/**
+ * Previews gallery field.
+ * @since 0.1.0
+ */
+add_filter('cortex_preview_render_gallery', function($field) {
+	return _cortex_buff(function() use($field) {
+		echo '<div class="cortex-preview-row-value">';
+		foreach ($field['value'] as $image) {
+			echo sprintf('<img src="%s">', $image['url']);
+		}
+		echo '</div>';
 	});
 });
 
